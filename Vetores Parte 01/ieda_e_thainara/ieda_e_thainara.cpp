@@ -1,33 +1,18 @@
 #include "stdafx.h"
-#include <iostream>
-#include "constante.h"
 #include "produto.h"
 #include "caminhao.h"
 #include "cliente.h"
 
-using namespace std;
-
-int main()
-{
-	int opcao;
-	do {
-		cout << "Menu" << endl;
-		cout << produto << " - Produto" << endl;
-		cout << caminhao << "- Caminhao" << endl;
-		cout << cliente << " - Cliente" << endl;
-		cout << "4 - Sair" << endl;
-		cout << "Entre com Opcao" << endl;
-		cin >> opcao;
-		switch (opcao)
-		{
-		case produto: produtomenu();break;
-		case caminhao: caminhaomenu();break;
-		case cliente: clientemenu();break;
-		
-		default:
-			break;
-		}
-	} while (opcao >= 1 && opcao <= 4);
-	system("pause");
-	return 0;
+int main() {
+    int opcao;
+    while (true) {
+        std::cout << "Menu\n1 - Produto\n2 - Caminhao\n3 - Cliente\n4 - Sair" << std::endl;
+        if (!lerInteiro(opcao) || opcao == 4) return 0;
+        switch (opcao) {
+        case produto: produtomenu(); break;
+        case caminhao: caminhaomenu(); break;
+        case cliente: clientemenu(); break;
+        default: std::cout << "Opcao invalida." << std::endl;
+        }
+    }
 }
