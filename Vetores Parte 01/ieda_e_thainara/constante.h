@@ -25,8 +25,6 @@
 #define IndiceVetor3 2
 
 
-int vetor[TAMANHO];
-int posicao;
 
 char vetor1[TAMANHO];
 char vetor2[TAMANHO];

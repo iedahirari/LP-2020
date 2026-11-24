@@ -1,3 +1,4 @@
+#pragma once
 #define TAMANHO 10
 #define LARGURA 20
 #define CADASTRAR 1
@@ -7,5 +8,6 @@
 #define SAIR 9
 #define posProduto 0
 
-char produto[TAMANHO][LARGURA];
-int cadastrados[2];
+char produto[TAMANHO][LARGURA] = {};
+int quilometragem[TAMANHO] = {};
+int cadastrados[1] = {};

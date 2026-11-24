@@ -1,54 +1,55 @@
-#include <iostream>
-#include <cstring>
-#include <locale>
-using namespace std;
+#pragma once
+#include <algorithm>
+#include "constante.h"
+#include "../entrada.h"
 
-void cadastrarTexto(char v[TAMANHO][LARGURA], int Indice){
-    cout << "Cadastrar" << endl;
-    cout << "Entre com o veiculo a ser cadastrado" << endl;
-    int posicaoCadastro = cadastrados[Indice];
-    string nome1;
-    cin.ignore();
-    getline(cin, nome1);
-    
-    strcpy(v[posicaoCadastro], nome1.c_str());
-    cadastrados[Indice]++;
-}
-
-void listarTexto(int i, char v[TAMANHO][LARGURA], int Indice){
-    if(i == cadastrados[Indice]){
+inline void cadastrarTexto(char v[TAMANHO][LARGURA], int indice) {
+    if (cadastrados[indice] >= TAMANHO) {
+        std::cout << "Cadastro cheio." << std::endl;
         return;
     }
-    cout << "Valor posição" << i << "-" << v[i] << endl;
-    listarTexto(i + 1, v, Indice);
-}
-
-void pesquisarTexto(int i, char v[TAMANHO][LARGURA], int indice, char vetorPesquisa[LARGURA]) {
-	if (i == cadastrados[indice]) {
-	    cout << "Registro não encontrado" << endl;
-		return;
-	}
-	int localizado = strcmp(v[i],vetorPesquisa);
-	if(localizado==0) {
-	    cout << v[i] << endl;
-	    return;
-	}else{
-	    pesquisarTexto(i + 1, v, indice,vetorPesquisa);
-	}
-}
-
-void listarRevisao(int i, char v[TAMANHO][LARGURA], int Indice){
-    if(i == cadastrados[Indice]){
+    std::cout << "Entre com o veiculo a ser cadastrado:" << std::endl;
+    std::string nome;
+    if (!lerTexto(nome, LARGURA - 1)) return;
+    std::cout << "Entre com a quilometragem desde a ultima revisao:" << std::endl;
+    int km;
+    if (!lerInteiro(km)) return;
+    if (km < 0) {
+        std::cout << "Quilometragem invalida." << std::endl;
         return;
     }
-    
-    int revisao = 1500;
-    
-    if (v[i]>=revisao){
-    cout << "Item" << i << " precisa de Revisão" << endl;
-    listarTexto(i + 1, v, Indice);
-    }else{
-        return;
-    }
+    const int p = cadastrados[indice];
+    std::copy(nome.begin(), nome.end(), v[p]);
+    v[p][nome.size()] = '\0';
+    quilometragem[p] = km;
+    ++cadastrados[indice];
 }
 
+inline void listarTexto(int i, char v[TAMANHO][LARGURA], int indice) {
+    if (i >= cadastrados[indice]) return;
+    std::cout << "Posicao " << i << ": " << v[i] << " - "
+              << quilometragem[i] << " km" << std::endl;
+    listarTexto(i + 1, v, indice);
+}
+
+inline void pesquisarTexto(int i, char v[TAMANHO][LARGURA], int indice,
+                           const std::string& nome) {
+    if (i >= cadastrados[indice]) {
+        std::cout << "Registro nao encontrado." << std::endl;
+        return;
+    }
+    if (nome == v[i]) {
+        std::cout << v[i] << " - " << quilometragem[i] << " km" << std::endl;
+        return;
+    }
+    pesquisarTexto(i + 1, v, indice, nome);
+}
+
+inline void listarRevisao(int i, char v[TAMANHO][LARGURA], int indice) {
+    if (i >= cadastrados[indice]) return;
+    if (quilometragem[i] >= 1500) {
+        std::cout << "Revisao: " << v[i] << " - "
+                  << quilometragem[i] << " km" << std::endl;
+    }
+    listarRevisao(i + 1, v, indice);
+}

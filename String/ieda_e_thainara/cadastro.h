@@ -1,60 +1,72 @@
 #pragma once
+#include <algorithm>
 #include "constante.h"
-#include <iostream>
-#include <cstring>
-#include <locale>
-using namespace std;
+#include "../../entrada.h"
 
-void cadastrar(char v[TAMANHO][LARGURA], int indice) {
-	cout << "Cadastrar" << endl;
-	cout << "entre com o valor a ser cadastrado:" << endl;
-	int posicaoCadastro = cadastrados[indice];	
-	string nome1;
-	cin.ignore();
-	getline(cin, nome1);
-	strcpy_s(v[posicaoCadastro], nome1.c_str());
-	cadastrados[indice]++;
-}
-
-void listarTexto(int i, char v[TAMANHO][LARGURA], int indice) {
-	if (i == cadastrados[indice]) {
-		return;
-	}
-	cout << "Valor posicao: " << i << "-" << v[i] << endl;
-	listarTexto(i + 1, v, indice);
+inline void cadastrar(char v[TAMANHO][LARGURA], int indice) {
+    if (cadastrados[indice] >= TAMANHO) {
+        std::cout << "Cadastro cheio." << std::endl;
+        return;
+    }
+    std::cout << "Entre com o texto a ser cadastrado:" << std::endl;
+    std::string nome;
+    if (!lerTexto(nome, LARGURA - 1)) return;
+    char* destino = v[cadastrados[indice]];
+    std::copy(nome.begin(), nome.end(), destino);
+    destino[nome.size()] = '\0';
+    ++cadastrados[indice];
 }
 
-void pesquisar(int i, char vRecebido[TAMANHO], int indicePosicao) {
-	if (i == pos[indicePosicao]) {
-		return;
-	}
-	cout << "valor Posicao:" << i << "-" << vRecebido[i] << endl;
-	pesquisar(i + 1, vRecebido, indicePosicao);
+inline void listarTexto(int i, char v[TAMANHO][LARGURA], int indice) {
+    if (i >= cadastrados[indice]) return;
+    std::cout << "Posicao " << i << ": " << v[i] << std::endl;
+    listarTexto(i + 1, v, indice);
 }
 
-void alterar(int i, char vRecebido[TAMANHO], int indicePosicao) {
-	cout << "alterar" << endl;
-	cout << "Entre com a posicao a ser alterada" << endl;
-	pesquisar(0, vRecebido, indicePosicao);
-	int p = 0;
-	cin >> p;
-	cout << "digite o valor";
-	cin >> vRecebido[p];
+inline void pesquisar(int i, char v[TAMANHO][LARGURA], int indice) {
+    std::cout << "Entre com o texto a ser pesquisado:" << std::endl;
+    std::string nome;
+    if (!lerTexto(nome, LARGURA - 1)) return;
+    for (; i < cadastrados[indice]; ++i) {
+        if (nome == v[i]) {
+            std::cout << "Posicao " << i << ": " << v[i] << std::endl;
+            return;
+        }
+    }
+    std::cout << "Registro nao encontrado." << std::endl;
 }
-void reorganizar(int i, char vRecebido[TAMANHO], int indicePosicao) {
-	if (i == (pos[indicePosicao] - 1)) {
-		return;
-	}
-	vRecebido[i] = vRecebido[i + 1];
-	reorganizar(i + 1, vRecebido, indicePosicao);
+
+inline void alterar(int i, char v[TAMANHO][LARGURA], int indice) {
+    listarTexto(i, v, indice);
+    std::cout << "Entre com a posicao a ser alterada:" << std::endl;
+    int p;
+    if (!lerInteiro(p)) return;
+    if (p < 0 || p >= cadastrados[indice]) {
+        std::cout << "Posicao invalida." << std::endl;
+        return;
+    }
+    std::cout << "Entre com o novo texto:" << std::endl;
+    std::string nome;
+    if (!lerTexto(nome, LARGURA - 1)) return;
+    std::copy(nome.begin(), nome.end(), v[p]);
+    v[p][nome.size()] = '\0';
 }
-void excluir(int i, char vRecebido[TAMANHO], int indicePosicao) {
-	cout << "excluir" << endl;
-	cout << "Entre com a posica9o a ser excluida" << endl;
-	pesquisar(0, vRecebido, indicePosicao);
-	int p = 0;
-	cin >> p;
-	reorganizar(p, vRecebido, indicePosicao);
-	pos[indicePosicao]--;
-	vRecebido[pos[indicePosicao]] = 0;
+
+inline void reorganizar(int i, char v[TAMANHO][LARGURA], int indice) {
+    if (i >= cadastrados[indice] - 1) return;
+    std::copy(v[i + 1], v[i + 1] + LARGURA, v[i]);
+    reorganizar(i + 1, v, indice);
+}
+
+inline void excluir(int i, char v[TAMANHO][LARGURA], int indice) {
+    listarTexto(i, v, indice);
+    std::cout << "Entre com a posicao a ser excluida:" << std::endl;
+    int p;
+    if (!lerInteiro(p)) return;
+    if (p < 0 || p >= cadastrados[indice]) {
+        std::cout << "Posicao invalida." << std::endl;
+        return;
+    }
+    reorganizar(p, v, indice);
+    v[--cadastrados[indice]][0] = '\0';
 }
